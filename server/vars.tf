@@ -8,5 +8,5 @@ variable wg_server_ami {
 
 variable wg_server_size {
 	type = string
-	default = "t3.small"
+	default = "t3.micro"
 }
