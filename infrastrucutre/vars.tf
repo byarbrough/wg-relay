@@ -1,6 +1,6 @@
 variable aws_region {
   type    = string
-  Default = "us-east-1"
+  default = "us-east-1"
 }
 
 variable aws_profile {

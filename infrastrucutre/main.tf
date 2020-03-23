@@ -4,5 +4,5 @@ provider "aws" {
 }
 
 module "wg_server" {
-  source = "server"
+  source = "./server"
 }
