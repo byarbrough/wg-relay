@@ -4,5 +4,10 @@ variable aws_region {
 }
 
 variable aws_profile {
-  type = string # environment variable
+  type = string
+}
+
+# server module
+variable "public_key_pair" {
+  type = string
 }
