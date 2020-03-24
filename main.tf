@@ -4,6 +4,6 @@ provider "aws" {
 }
 
 module "wg_server" {
-  source = "./server"
+  source          = "./server"
   public_key_pair = var.public_key_pair
 }
