@@ -8,7 +8,7 @@ variable "availability_zone" {
 
 variable "allowed_ssh_ips" {
   # whitelist of CIDR block for ssh
-  type = string
+  type = list(string)
 }
 
 variable "wg_server_size" {

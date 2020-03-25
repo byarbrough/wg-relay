@@ -14,7 +14,7 @@ variable "public_key_pair" {
 
 variable "allowed_ssh_ips" {
   # whitelist of CIDR block for ssh
-  type = string
+  type = list(string)
 }
 
 variable "availability_zone" {

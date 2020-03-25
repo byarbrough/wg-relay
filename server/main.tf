@@ -72,7 +72,7 @@ resource "aws_security_group" "sg_wg_server" {
     from_port   = 22
     to_port     = 22
     protocol    = "TCP"
-    cidr_blocks = [var.allowed_ssh_ips] # TODO: figure out escaping for tfvars so can be true list
+    cidr_blocks = var.allowed_ssh_ips
   }
 
   # allow anything out
