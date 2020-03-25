@@ -2,6 +2,10 @@ variable "public_key_pair" {
   type = string
 }
 
+variable "availability_zone" {
+  type = string
+}
+
 variable "allowed_ssh_ips" {
   # whitelist of CIDR block for ssh
   type = string
@@ -14,5 +18,5 @@ variable "wg_server_size" {
 
 variable "wg_server_ami" {
   type    = string
-  default = "ami-0682ababa71304573" # ubuntu-eoan-19.10-amd64-minimal-20191
+  default = "ami-01cd5988241256cd8" # ubuntu-eoan-19.10-amd64-minimal-20200317
 }

@@ -16,3 +16,8 @@ variable "allowed_ssh_ips" {
   # whitelist of CIDR block for ssh
   type = string
 }
+
+variable "availability_zone" {
+  type    = string
+  default = "us-east-1a"
+}
