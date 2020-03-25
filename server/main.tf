@@ -100,6 +100,11 @@ resource "aws_instance" "wg_server" {
   subnet_id                   = aws_subnet.wg_subnet.id
   vpc_security_group_ids      = [aws_security_group.sg_wg_server.id]
 
+  # execute ansible playbooks from the same machine running this terraform
+  provisioner "local-exec" {
+    command = "ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ${var.private_key_path} playbooks/wg_server.yml"
+  }
+
   tags = {
     Name    = "Wireguard Relay Server"
     Project = "wg-relay"

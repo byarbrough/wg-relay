@@ -20,3 +20,7 @@ variable "wg_server_ami" {
   type    = string
   default = "ami-01cd5988241256cd8" # ubuntu-eoan-19.10-amd64-minimal-20200317
 }
+
+variable "private_key_path" {
+  type = string
+}

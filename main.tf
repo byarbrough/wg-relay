@@ -8,4 +8,5 @@ module "wg_server" {
   public_key_pair   = var.public_key_pair
   allowed_ssh_ips   = var.allowed_ssh_ips
   availability_zone = var.availability_zone
+  private_key_path  = var.private_key_path
 }
