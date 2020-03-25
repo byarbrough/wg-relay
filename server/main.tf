@@ -75,6 +75,14 @@ resource "aws_security_group" "sg_wg_server" {
     cidr_blocks = var.allowed_ssh_ips
   }
 
+  # allow wg in
+  ingress {
+    from_port   = 0
+    to_port     = var.wg_port
+    protocol    = "UDP"
+    cidr_blocks = var.allowed_wg_ips
+  }
+
   # allow anything out
   egress {
     from_port   = 0
