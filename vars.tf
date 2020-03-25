@@ -11,3 +11,8 @@ variable aws_profile {
 variable "public_key_pair" {
   type = string
 }
+
+variable "allowed_ssh_ips" {
+  # whitelist of CIDR block for ssh
+  type = string
+}
