@@ -1,6 +1,6 @@
 auto wg0
 iface wg0 inet static
-    address 172.17.0.11
+    address 172.17.0.12
     netmask 255.255.0.0
     pre-up ip link add dev wg0 type wireguard
     pre-up wg setconf wg0 /etc/wireguard/wg0.conf
