@@ -1,0 +1,12 @@
+---
+- hosts: all
+  name: Install and Configure Wireguard Relay Server
+  remote_user: ubuntu
+
+  tasks:
+  - name: install latest version of wireguard
+    apt:
+      name: wireguard
+      state: present
+      update_cache: true
+    become: true
