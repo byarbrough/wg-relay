@@ -16,7 +16,7 @@
   - name: Upload wg configuration files
     become: true
     copy:
-      src: config/wg0.conf
+      src: wg0.conf
       dest: /etc/wireguard/wg0.conf
 
   - name: wg0 up
