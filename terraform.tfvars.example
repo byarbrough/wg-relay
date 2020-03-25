@@ -1,2 +1,3 @@
+allowed_ssh_ips = "127.0.0.0/24"
 aws_profile     = "my_profile"
 public_key_pair = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCv30gzcDKwK8PeD9QBJOTTEomIh1x2iJlY5sbSJwWMvO3/IGBOTpfmWBbQwmClu+saPnWuZZcN8sfnc5+rgFLExKJub+Xdhsw5bGhABSGT8r0qKOKt3Qt0p6Z/ySEWhyZAbZTWUTxl1fROY3X+hNizcdfjv9ojBrhHWL26T+TqoIWOEw84Bx3ZG+onfJOX6T9OqsEFqkW1Vz62yrMuUPWdWGHuZznDbB5gncRPyLhMt/8tHq1W6HnyS6cBu8nNyd18XN2WjIr8/kh4P1iaqH3hsqW1fwpTshY/JTNWCVxeX1dAFW36PJw6i+3gKH86uy5eRuOADIb0JAV3MpRVanjj wg-relay-dev"
