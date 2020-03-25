@@ -2,20 +2,8 @@
 - hosts: all
   name: Install and Configure Wireguard Relay Server
   remote_user: ubuntu
-
-  # Ansible needs python to work properly
-  gather_facts: false
-  pre_tasks:
-  - name: Install python for Ansible
-    become: true
-    raw: >
-      test -e /usr/bin/python ||
-      (apt -y update && apt install -y python-minimal)
-
-    changed_when: false
-  - name: Gather facts now that Python is installed
-    setup:
-
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
 
   tasks:
   - name: Install latest version of Wireguard
