@@ -21,3 +21,7 @@ variable "availability_zone" {
   type    = string
   default = "us-east-1a"
 }
+
+variable "private_key_path" {
+  type = string
+}
