@@ -17,6 +17,11 @@ variable "allowed_ssh_ips" {
   type = list(string)
 }
 
+variable "allowed_wg_ips" {
+  # whitelist of CIDR block for wg peer
+  type = list(string)
+}
+
 variable "availability_zone" {
   type    = string
   default = "us-east-1a"
