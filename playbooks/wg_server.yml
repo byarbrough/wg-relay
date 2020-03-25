@@ -12,3 +12,14 @@
       state: present
       update_cache: true
     become: true
+
+  - name: Upload wg configuration files
+    become: true
+    copy:
+      src: config/wg0.conf
+      dest: /etc/wireguard/wg0.conf
+
+  - name: wg0 up
+    become: true
+    raw: wg-quick up wg0
+    changed_when: false
