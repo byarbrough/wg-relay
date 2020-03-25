@@ -22,6 +22,11 @@ variable "allowed_wg_ips" {
   type = list(string)
 }
 
+variable "wg_port" {
+  type    = number
+  default = 52820
+}
+
 variable "availability_zone" {
   type    = string
   default = "us-east-1a"
