@@ -1,6 +1,6 @@
 FROM alpine:3.11
 
-RUN apk add -U wireguard-tools
+RUN apk update && apk add -U wireguard-tools
 
 # destinations for config files
 RUN umask 077 && mkdir -p /etc/wireguard
