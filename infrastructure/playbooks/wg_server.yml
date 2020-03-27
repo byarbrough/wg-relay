@@ -5,6 +5,15 @@
   vars:
     ansible_python_interpreter: /usr/bin/python3
 
+  gather_facts: false
+  pre_tasks:
+  - name: Wait for instance availability
+    wait_for_connection:
+      timeout: 120
+  - name: Gather facts
+    setup:
+
+
   tasks:
   - name: Install latest version of Wireguard
     apt:
@@ -19,7 +28,8 @@
       src: wg0.conf
       dest: /etc/wireguard/wg0.conf
 
-      #  - name: wg0 up
-      #become: true
-      #raw: wg-quick up wg0
-      #changed_when: false
+  - name: wg0 up
+    become: true
+    raw:
+      wg-quick up wg0
+    changed_when: false
