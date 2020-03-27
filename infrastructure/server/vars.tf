@@ -11,6 +11,15 @@ variable "allowed_ssh_ips" {
   type = list(string)
 }
 
+variable "allowed_wg_ips" {
+  # whitelist of CIDR block for wg peer
+  type = list(string)
+}
+
+variable "wg_port" {
+  type = number
+}
+
 variable "wg_server_size" {
   type    = string
   default = "t3.micro"
@@ -19,4 +28,8 @@ variable "wg_server_size" {
 variable "wg_server_ami" {
   type    = string
   default = "ami-01cd5988241256cd8" # ubuntu-eoan-19.10-amd64-minimal-20200317
+}
+
+variable "private_key_path" {
+  type = string
 }
