@@ -75,6 +75,14 @@ resource "aws_security_group" "sg_wg_server" {
     cidr_blocks = var.allowed_ssh_ips
   }
 
+  # allow wg in
+  ingress {
+    from_port   = var.wg_port
+    to_port     = var.wg_port
+    protocol    = "UDP"
+    cidr_blocks = var.allowed_wg_ips
+  }
+
   # allow anything out
   egress {
     from_port   = 0
@@ -99,6 +107,11 @@ resource "aws_instance" "wg_server" {
   associate_public_ip_address = true
   subnet_id                   = aws_subnet.wg_subnet.id
   vpc_security_group_ids      = [aws_security_group.sg_wg_server.id]
+
+  # execute ansible playbooks from the same machine running this terraform
+  provisioner "local-exec" {
+    command = "ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ${var.private_key_path} playbooks/wg_server.yml"
+  }
 
   tags = {
     Name    = "Wireguard Relay Server"
