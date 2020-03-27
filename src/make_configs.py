@@ -54,7 +54,7 @@ SERVER_CONF_PATH = Path('../infrastructure/playbooks/files/wg0.conf')
 
 # Format of start of server's wg0.conf
 server_new_conf = \
-'''[Interface]
+    '''[Interface]
     Address = {SUBNET}.1/24
     ListenPort = {SERVER_PORT}
     PrivateKey = {SERVER_PRIVATE_KEY}
