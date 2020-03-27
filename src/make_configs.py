@@ -50,7 +50,9 @@ SUBNET = '10.37.0'              # Base address of CIDR 24 subnet
 
 NUM_PEERS = 1  # Number of peers (and conf files generated) max 253
 PEER_CONF_DIR = Path('../peer/config')  # Path to store peer conf files
-SERVER_CONF_PATH = Path('../infrastructure/playbooks/files/wg0.conf')
+PEER_CONF_DIR.mkdir(exist_ok=True)
+SERVER_CONF_DIR = Path('../infrastructure/playbooks/files/')
+SERVER_CONF_DIR.mkdir(exist_ok=True)
 
 # Format of start of server's wg0.conf
 server_new_conf = \
@@ -114,4 +116,4 @@ for i in range(2, NUM_PEERS + 2):
         .write_text(peer_new_conf_buffer)
 
 # Write full server conf buffer to single file
-SERVER_CONF_PATH.write_text(server_conf_buffer)
+(SERVER_CONF_DIR / "wg0.conf").write_text(server_conf_buffer)
