@@ -41,21 +41,20 @@ if not is_ip(sys.argv[1]):
 
 
 # gloabl variables
-SERVER_PUBLIC_IP = sys.argv[1] 	# Public facing IP of wireguard server
-SERVER_PORT = 51820				# UDP port hosting wireguard on server
-SUBNET = '10.37.0'				# Base address of CIDR 24 subnet
+SERVER_PUBLIC_IP = sys.argv[1]  # Public facing IP of wireguard server
+SERVER_PORT = 51820             # UDP port hosting wireguard on server
+SUBNET = '10.37.0'              # Base address of CIDR 24 subnet
 # For new servers, generate new keys. For existing servers, change this
 (SERVER_PRIVATE_KEY, SERVER_PUBLIC_KEY) = wg_genkey()
 
 
 NUM_PEERS = 1  # Number of peers (and conf files generated) max 253
-PEER_CONF_DIR = Path('peer_conf_files')  # Path to store peer conf files
-SERVER_CONF_PATH = Path('infrastructure/playbooks/files/wg0.conf')
-PEER_CONF_DIR.mkdir(exist_ok=True)
+PEER_CONF_DIR = Path('../peer/config')  # Path to store peer conf files
+SERVER_CONF_PATH = Path('../infrastructure/playbooks/files/wg0.conf')
 
 # Format of start of server's wg0.conf
 server_new_conf = \
-    '''[Peer]
+'''[Interface]
     Address = {SUBNET}.1/24
     ListenPort = {SERVER_PORT}
     PrivateKey = {SERVER_PRIVATE_KEY}
@@ -79,7 +78,7 @@ peer_new_conf = \
     [Peer]
     PublicKey = {server_public_key}
     AllowedIPs = {SUBNET}.0/24
-    Endpoint = {SUBNET}.1:{SERVER_PORT}
+    Endpoint = {SERVER_PUBLIC_IP}:{SERVER_PORT}
     PersistentKeepalive=23
     '''
 
@@ -107,6 +106,7 @@ for i in range(2, NUM_PEERS + 2):
                              peer_private_key=peer_private_key,
                              server_public_key=SERVER_PUBLIC_KEY,
                              SUBNET=SUBNET,
+                             SERVER_PUBLIC_IP=SERVER_PUBLIC_IP,
                              SERVER_PORT=SERVER_PORT)
 
     # New conf file generated for each peer and placed in same directory
