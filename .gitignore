@@ -1,7 +1,9 @@
 .env
 env-*/
 .terraform
+.terraform.tfstate.lock.info
 terraform.*
 !terraform.tfvars.example
 *id_rsa
 *id_rsa.pub
+*.conf

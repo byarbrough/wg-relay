@@ -4,8 +4,9 @@
   remote_user: ubuntu
   vars:
     ansible_python_interpreter: /usr/bin/python3
-
   gather_facts: false
+
+
   pre_tasks:
   - name: Wait for instance availability
     wait_for_connection:
