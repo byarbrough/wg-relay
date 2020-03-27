@@ -24,7 +24,7 @@ variable "allowed_wg_ips" {
 
 variable "wg_port" {
   type    = number
-  default = 52820
+  default = 51820
 }
 
 variable "availability_zone" {
