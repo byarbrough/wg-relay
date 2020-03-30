@@ -34,3 +34,13 @@
     raw:
       wg-quick up wg0
     changed_when: false
+
+  # Set ip forwarding on in /proc and in the sysctl file and reload if necessary
+  - name: Enable forwarding
+    become: true
+    sysctl:
+      name: net.ipv4.ip_forward
+      value: '1'
+      sysctl_set: yes
+      state: present
+      reload: yes

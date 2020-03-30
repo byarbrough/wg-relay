@@ -48,7 +48,7 @@ SUBNET = '10.37.0'              # Base address of CIDR 24 subnet
 (SERVER_PRIVATE_KEY, SERVER_PUBLIC_KEY) = wg_genkey()
 
 
-NUM_PEERS = 1  # Number of peers (and conf files generated) max 253
+NUM_PEERS = 2  # Number of peers (and conf files generated) max 253
 PEER_CONF_DIR = Path('../peer/config')  # Path to store peer conf files
 PEER_CONF_DIR.mkdir(exist_ok=True)
 SERVER_CONF_DIR = Path('../infrastructure/playbooks/files/')
