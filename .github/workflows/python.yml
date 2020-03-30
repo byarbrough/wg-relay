@@ -25,6 +25,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        sudo add-apt-repository ppa:wireguard/wireguard
         sudo apt-get update && sudo apt-get install wireguard -y
     - name: Lint with flake8
       run: |
