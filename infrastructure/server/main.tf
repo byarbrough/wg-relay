@@ -13,6 +13,7 @@ resource "aws_key_pair" "wg_server_key_pair" {
 }
 
 
+# the next serveral resources are for networking
 resource "aws_vpc" "wg_vpc" {
   cidr_block = "10.0.0.0/24"
 
@@ -54,6 +55,7 @@ resource "aws_route_table" "wg_route_table" {
     Project = "wg-relay"
   }
 }
+
 
 resource "aws_main_route_table_association" "wg_a" {
   vpc_id         = aws_vpc.wg_vpc.id
@@ -97,6 +99,16 @@ resource "aws_security_group" "sg_wg_server" {
 }
 
 
+# elastic ip address
+resource "aws_eip" "wg_eip" {
+  vpc = true
+
+  tags = {
+    Project = "wg-relay"
+  }
+}
+
+
 # the server itself
 resource "aws_instance" "wg_server" {
   ami                         = var.wg_server_ami
@@ -108,6 +120,18 @@ resource "aws_instance" "wg_server" {
   subnet_id                   = aws_subnet.wg_subnet.id
   vpc_security_group_ids      = [aws_security_group.sg_wg_server.id]
 
+  # generate wireguard key files
+  provisioner "local-exec" {
+    # use eip that will be associated after creation
+    command = "python3 ../src/make_configs.py ${aws_eip.wg_eip.public_ip}"
+  }
+
+  # execute ansible playbooks
+  provisioner "local-exec" {
+    # use current public ip becuase eip is not associated yet
+    command = "ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ${var.private_key_path} playbooks/wg_server.yml"
+  }
+
   tags = {
     Name    = "Wireguard Relay Server"
     Project = "wg-relay"
@@ -115,23 +139,8 @@ resource "aws_instance" "wg_server" {
 }
 
 
-resource "aws_eip" "wg_eip" {
-  vpc                       = true
-  instance                  = aws_instance.wg_server.id
-  associate_with_private_ip = aws_instance.wg_server.private_ip
-  depends_on                = [aws_internet_gateway.wg_gw]
-
-  # generate wireguard key files
-  provisioner "local-exec" {
-    command = "python3 ../src/make_configs.py ${self.public_ip}"
-  }
-
-  # execute ansible playbooks
-  provisioner "local-exec" {
-    command = "ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ${var.private_key_path} playbooks/wg_server.yml"
-  }
-
-  tags = {
-    Project = "wg-relay"
-  }
+# associate the elastic ip with the ec2 instance
+resource "aws_eip_association" "wg_server_eip" {
+  instance_id   = aws_instance.wg_server.id
+  allocation_id = aws_eip.wg_eip.id
 }
