@@ -1,0 +1,45 @@
+image: python:3.7-alpine3.10
+
+cache:
+  key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+
+before_script:
+  # get terraform ready
+  - apk add terraform
+  - terraform --version
+  - terraform init
+  # install ansible
+  - apk add ansible
+  - ansible --version
+  - apk add ansible-lint
+  - ansible-lint --version
+  # install python tools
+  - pip install -r requirements.txt
+
+
+stages:
+  - lint
+  - test
+  - plan
+
+
+python:
+  stage: lint
+  script:
+    - flake8 src/*
+  only:
+    - branches
+
+ansible:
+  stage: lint
+  script:
+    - ansible-lint infrastructure/playbooks/*
+  only:
+    - branches
+
+terraform:
+  stage: lint
+  script:
+    - terraform fmt -recursive -check infrastructure/
+  only:
+    - branches
