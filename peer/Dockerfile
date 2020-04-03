@@ -6,7 +6,7 @@ RUN apk update && apk add -U wireguard-tools
 RUN umask 077 && mkdir -p /etc/wireguard
 
 # file with Interface and Peers
-COPY config/* /etc/wireguard/wg0.conf
+COPY config/wg_*-2.conf /etc/wireguard/wg0.conf
 
 # wg defualt port
 EXPOSE 51820/udp

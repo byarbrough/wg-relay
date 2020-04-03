@@ -85,11 +85,27 @@ resource "aws_security_group" "sg_wg_server" {
     cidr_blocks = var.allowed_wg_ips
   }
 
-  # allow anything out
+  # allow dns out
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 53
+    to_port     = 53
+    protocol    = "UDP"
+    cidr_blocks = ["8.8.8.8/32", "1.1.1.1/32"]
+  }
+
+  # allow http out
+  egress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "TCP"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # allow https out
+  egress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
