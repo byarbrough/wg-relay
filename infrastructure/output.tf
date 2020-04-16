@@ -1,3 +1,3 @@
-output "wg_server_ip" {
-  value = module.wg_server.wg_server_ip
+output "wg_relay_ip" {
+  value = module.wg_relay.wg_relay_ip
 }
