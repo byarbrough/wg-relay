@@ -15,11 +15,13 @@ variable "public_key_pair" {
 variable "allowed_ssh_ips" {
   # whitelist of CIDR block for ssh
   type = list(string)
+  default = ["0.0.0.0/0"]
 }
 
 variable "allowed_wg_ips" {
   # whitelist of CIDR block for wg peer
   type = list(string)
+  default = ["0.0.0.0/0"]
 }
 
 variable "wg_port" {
