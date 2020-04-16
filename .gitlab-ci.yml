@@ -29,9 +29,6 @@ python:
   stage: validate
   script:
     - python -m py_compile src/*.py
-  only:
-    - branches
-
   stage: lint
   script:
     - flake8 src/*.py
@@ -43,9 +40,6 @@ ansible:
   stage: validate
   script:
     ansible-playbook --syntax-check infrastructure/playbooks/*.yml
-  only:
-    - branches
-
   stage: lint
   script:
     - ansible-lint infrastructure/playbooks/*
@@ -57,9 +51,6 @@ terraform:
   stage: validate
   script:
     - terraform validate
-  only:
-    - branches
-
   stage: lint
   script:
     - terraform fmt -recursive -check infrastructure/
