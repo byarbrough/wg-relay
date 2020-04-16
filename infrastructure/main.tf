@@ -3,7 +3,7 @@ provider "aws" {
   profile = var.aws_profile
 }
 
-module "wg_server" {
+module "wg_relay" {
   source            = "./relay"
   public_key_pair   = var.public_key_pair
   allowed_ssh_ips   = var.allowed_ssh_ips
