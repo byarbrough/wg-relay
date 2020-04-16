@@ -3,6 +3,7 @@ Module for interacting with WireGuard keys
 """
 from subprocess import check_output
 
+
 def genkey():
     """ Use wg genkey to create new public and private key"""
 

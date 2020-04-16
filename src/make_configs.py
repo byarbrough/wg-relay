@@ -2,8 +2,8 @@
 Create the wireguard server and configuration files
 """
 from pathlib import Path
-from subprocess import check_output
 from re import search
+from wg import keys
 import sys
 
 
@@ -15,21 +15,6 @@ def is_ip(ip):
         25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)'''
 
     return search(ip_regex, ip)
-
-
-def wg_genkey():
-    """ Use wg genkey to create new public and private key"""
-
-    # Private key first
-    private_key_bytes = check_output(['wg', 'genkey'])
-    # Use generated private key to generate associated public key
-    public_key_bytes = check_output(['wg', 'pubkey'], input=private_key_bytes)
-
-    # Convert bytes to string and strip newline
-    private_key = private_key_bytes.decode('utf-8').strip('\n')
-    public_key = public_key_bytes.decode('utf-8').strip('\n')
-
-    return (private_key, public_key)
 
 
 # verify arguments
@@ -45,7 +30,7 @@ SERVER_PUBLIC_IP = sys.argv[1]  # Public facing IP of wireguard server
 SERVER_PORT = 51820             # UDP port hosting wireguard on server
 SUBNET = '10.37.0'              # Base address of CIDR 24 subnet
 # For new servers, generate new keys. For existing servers, change this
-(SERVER_PRIVATE_KEY, SERVER_PUBLIC_KEY) = wg_genkey()
+(SERVER_PRIVATE_KEY, SERVER_PUBLIC_KEY) = keys.genkey()
 
 
 NUM_PEERS = 2  # Number of peers (and conf files generated) max 253
@@ -96,7 +81,7 @@ for i in range(2, NUM_PEERS + 2):
     # IP of new peer being provisioned
     peer_ip = f'{SUBNET}.{str(i)}'
     # Generate new keys with wireguard
-    (peer_private_key, peer_public_key) = wg_genkey()
+    (peer_private_key, peer_public_key) = keys.genkey()
 
     # Append new peer to server conf buffer
     server_conf_buffer += \
