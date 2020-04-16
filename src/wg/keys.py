@@ -5,7 +5,7 @@ from subprocess import check_output
 
 
 def genkey():
-    """ Use wg genkey to create new public and private key"""
+    """ Use wg genkey to create new public and private key """
 
     # Private key first
     private_key_bytes = check_output(['wg', 'genkey'])
@@ -17,3 +17,13 @@ def genkey():
     public_key = public_key_bytes.decode('utf-8').strip('\n')
 
     return (private_key, public_key)
+
+
+def get_pubkey(private_key):
+    """ Retun the wg public key corresponding to input wg private key """
+
+    private_key_bytes = private_key.encode('utf-8')
+    public_key_bytes = check_output(['wg', 'pubkey'], input=private_key_bytes)
+    public_key = public_key_bytes.decode('utf-8').strip('\n')
+
+    return public_key
