@@ -1,10 +1,13 @@
+[![Build badge](https://gitlab.com/byarbrough/wg-relay/badges/master/pipeline.svg)](https://gitlab.com/byarbrough/wg-relay)
 # wg-relay
-Relay wireguard traffic between two hosts using a cloud server in the middle.
+Relay wireguard traffic between peers using a cloud server in the middle.
 Fully automated with Terraform and Ansible.
 Current implementation is on AWS using Alpine Linux Docker Clients.
 
+Medium Series: _[WireGuard Relay Infrastructure as Code](https://medium.com/@yarbrough.b/wireguard-relay-infrastructure-as-code-b337b77af9d5)_
+
 ## Wireguard
-The tricky thing to realize about wg is that all it does is make an encrypted route for UDP traffic between two devices. These interfaces (called `wg0` by default) have their own IP address, which should be part of a subnet _different than the subnet of any physical interfaces._ Otherwise you will have issues with routing.
+The tricky thing to realize about wg is that all it does is make an encrypted route for UDP traffic between two devices. These interfaces (typically called `wg0`) have their own IP address, which should be part of a subnet _different than the subnet of any physical interfaces._ Otherwise you will have issues with routing.
 
 # Install
 Clone this repo, and then `cd` into it.
@@ -23,12 +26,12 @@ Ansible is best installed with pip (and inside a venv if you use those).
 pip install ansible
 ```
 
-Next, export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` or place them in `infrastructure/.env`
+Next, export `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` or use `aws configure` to place them in `.aws/credentials`. Terraform checks that file by default; however the profile name must match what you give terraform.
 
 Create `terraform.tfvars` following the example of `terraform.tfvars.example`.
 This will require the generation of an ssh key, example here named `wg-id_rsa`
 ```
-ssh-keygen -t rsa -b 2048 -N '' -C "wireguard ssh key" -f wg-id_rsa
+ssh-keygen -t rsa -b 4096 -N '' -C "wireguard ssh key" -f wg-id_rsa
 ```
 
 To see if things are ready to go use
@@ -85,3 +88,8 @@ peer: ...
   persistent keepalive: every 23 seconds
 ```
 If you see a handshake, congratulations, your container is talking to the cloud wireguard relay!
+
+
+_Working repository is https://gitlab.com/byarbrough/wg-relay_
+
+_Mirrored at https://github.com/byarbrough/wg-relay/_

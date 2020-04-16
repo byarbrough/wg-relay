@@ -1,5 +1,5 @@
 /***********************************************
-Module for wireguard relay server
+Module for wg_relay server
 ************************************************/
 
 # ssh key for accessing the relay
@@ -15,7 +15,7 @@ resource "aws_key_pair" "wg_relay_key_pair" {
 
 # the next serveral resources are for networking
 resource "aws_vpc" "wg_vpc" {
-  cidr_block = "10.0.0.0/24"
+  cidr_block = var.vpc_subnet
 
   tags = {
     Project = "wg-relay"
@@ -25,7 +25,7 @@ resource "aws_vpc" "wg_vpc" {
 
 resource "aws_subnet" "wg_subnet" {
   vpc_id            = aws_vpc.wg_vpc.id
-  cidr_block        = "10.0.0.0/24"
+  cidr_block        = var.vpc_subnet
   availability_zone = var.availability_zone
 
   tags = {
