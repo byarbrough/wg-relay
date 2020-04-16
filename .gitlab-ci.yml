@@ -1,3 +1,4 @@
+---
 image: python:3.7-alpine3.10
 
 cache:
@@ -18,26 +19,47 @@ before_script:
 
 
 stages:
+  - validate
   - lint
   - test
   - plan
 
 
 python:
-  stage: lint
+  stage: validate
   script:
-    - flake8 src/*
+    - python -m py_compile src/*.py
   only:
     - branches
 
+  stage: lint
+  script:
+    - flake8 src/*.py
+  only:
+    - branches
+
+
 ansible:
+  stage: validate
+  script:
+    ansible-playbook --syntax-check infrastructure/playbooks/*.yml
+  only:
+    - branches
+
   stage: lint
   script:
     - ansible-lint infrastructure/playbooks/*
   only:
     - branches
 
+
 terraform:
+  stage: validate
+  script:
+    - terraform validate
+  only:
+    - branches
+
   stage: lint
   script:
     - terraform fmt -recursive -check infrastructure/
