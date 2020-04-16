@@ -11,7 +11,7 @@ before_script:
   - terraform init
   # install ansible
   - apk add ansible
-  - ansible --version
+  - ansible-playbook --version
   - apk add ansible-lint
   - ansible-lint --version
   # install python tools
@@ -19,40 +19,33 @@ before_script:
 
 
 stages:
-  - validate
-  - lint
+  - accept
+  - build
   - test
   - plan
+  - apply
 
-
-python:
-  stage: validate
+## accept jobs focus on syntax and linting
+accept 1/3:
+  stage: accept
   script:
     - python -m py_compile src/*.py
-  stage: lint
-  script:
     - flake8 src/*.py
   only:
     - branches
 
-
-ansible:
-  stage: validate
+accept 2/3:
+  stage: accept
   script:
-    ansible-playbook --syntax-check infrastructure/playbooks/*.yml
-  stage: lint
-  script:
+    - ansible-playbook --syntax-check infrastructure/playbooks/*.yml
     - ansible-lint infrastructure/playbooks/*
   only:
     - branches
 
-
-terraform:
-  stage: validate
+accept 3/3:
+  stage: accept
   script:
     - terraform validate
-  stage: lint
-  script:
     - terraform fmt -recursive -check infrastructure/
   only:
     - branches
