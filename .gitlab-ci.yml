@@ -27,14 +27,17 @@ stages:
 
 ## accept jobs focus on syntax and linting
 accept 1/3:
+  # python
   stage: accept
   script:
     - python -m py_compile src/*.py
-    - flake8 src/*.py
+    - flake8 src/
+    - flake8 test/
   only:
     - branches
 
 accept 2/3:
+  # ansible
   stage: accept
   script:
     - ansible-playbook --syntax-check infrastructure/playbooks/*.yml
@@ -43,9 +46,17 @@ accept 2/3:
     - branches
 
 accept 3/3:
+  # terraform
   stage: accept
   script:
     - terraform validate
     - terraform fmt -recursive -check infrastructure/
+  only:
+    - branches
+
+python test:
+  stage: test
+  script:
+    - pytest
   only:
     - branches
