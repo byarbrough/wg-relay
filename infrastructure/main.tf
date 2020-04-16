@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 module "wg_server" {
-  source            = "./server"
+  source            = "./relay"
   public_key_pair   = var.public_key_pair
   allowed_ssh_ips   = var.allowed_ssh_ips
   allowed_wg_ips    = var.allowed_wg_ips
