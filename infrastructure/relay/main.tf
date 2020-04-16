@@ -1,5 +1,5 @@
 /***********************************************
-Module for wireguard relay server
+Module for wg_relay server
 ************************************************/
 
 # ssh key for accessing the relay
