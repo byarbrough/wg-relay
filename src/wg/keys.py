@@ -2,6 +2,7 @@
 Module for interacting with WireGuard keys
 """
 from subprocess import check_output
+from subprocess import CalledProcessError
 
 
 def genkey():
@@ -22,8 +23,11 @@ def genkey():
 def get_pubkey(private_key):
     """ Retun the wg public key corresponding to input wg private key """
 
-    private_key_bytes = private_key.encode('utf-8')
-    public_key_bytes = check_output(['wg', 'pubkey'], input=private_key_bytes)
-    public_key = public_key_bytes.decode('utf-8').strip('\n')
+    try:
+        priv_key_bytes = private_key.encode('utf-8')
+        publ_key_bytes = check_output(['wg', 'pubkey'], input=priv_key_bytes)
+        publ_key = publ_key_bytes.decode('utf-8').strip('\n')
+    except CalledProcessError:
+        raise TypeError('WireGuard public key imporperly formatted.')
 
-    return public_key
+    return publ_key
