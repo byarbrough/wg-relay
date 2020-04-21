@@ -4,23 +4,38 @@ Create the wireguard server and configuration files
 from pathlib import Path
 from wg import keys
 from ipaddress import ip_address
-import sys
+from ipaddress import ip_network
+import argparse
 
 
-# verify arguments
+# parse args
+parser = argparse.ArgumentParser(
+    description='Generate WireGuard interface config files')
+parser.add_argument('relay_public_ip', type=str,
+                    help='The public IP of the wg relay server')
+parser.add_argument('relay_listen_port', type=int,
+                    help='UDP port listening on WireGuard relay')
+parser.add_argument('--wg_subnet', type=str, default='10.37.0.0/24',
+                    help='The CIDR notation of wg VPN subnet')
+
+args = parser.parse_args()
+relay_listen_port = args.relay_listen_port
+
+# verify relay_public_ip is valid
 try:
-    ip = ip_address(sys.argv[1])
+    relay_public_ip = ip_address(args.relay_public_ip)
 except ValueError:
-    print('IP address is invalid: %s' % sys.argv[1])
-    print('Usage : %s  ip' % sys.argv[0])
+    raise
+
+# verify subnet is valid
+try:
+    wg_subnet = ip_network(args.wg_subnet, strict=True)
+except ValueError:
+    raise
 
 
-# gloabl variables
-SERVER_PUBLIC_IP = sys.argv[1]  # Public facing IP of wireguard server
-SERVER_PORT = 51820             # UDP port hosting wireguard on server
-SUBNET = '10.37.0'              # Base address of CIDR 24 subnet
-# For new servers, generate new keys. For existing servers, change this
-(SERVER_PRIVATE_KEY, SERVER_PUBLIC_KEY) = keys.genkey()
+# Generate a new private and pulic key for the relay
+(RELAY_PRIVATE_KEY, RELAY_PUBLIC_KEY) = keys.genkey()
 
 
 NUM_PEERS = 2  # Number of peers (and conf files generated) max 253
@@ -33,8 +48,8 @@ SERVER_CONF_DIR.mkdir(exist_ok=True)
 server_new_conf = \
     '''[Interface]
     Address = {SUBNET}.1/24
-    ListenPort = {SERVER_PORT}
-    PrivateKey = {SERVER_PRIVATE_KEY}
+    ListenPort = {RELAY_LISTEN_PORT}
+    PrivateKey = {RELAY_PRIVATE_KEY}
 
     '''
 
@@ -53,23 +68,23 @@ peer_new_conf = \
     PrivateKey = {peer_private_key}
 
     [Peer]
-    PublicKey = {server_public_key}
+    PublicKey = {RELAY_PUBLIC_KEY}
     AllowedIPs = {SUBNET}.0/24
-    Endpoint = {SERVER_PUBLIC_IP}:{SERVER_PORT}
+    Endpoint = {RELAY_PUBLIC_IP}:{RELAY_LISTEN_PORT}
     PersistentKeepalive=23
     '''
 
 
 # Continually append new information to buffer
 server_conf_buffer = \
-    server_new_conf.format(SUBNET=SUBNET,
-                           SERVER_PORT=SERVER_PORT,
-                           SERVER_PRIVATE_KEY=SERVER_PRIVATE_KEY)
+    server_new_conf.format(SUBNET=wg_subnet,
+                           RELAY_LISTEN_PORT=relay_listen_port,
+                           RELAY_PRIVATE_KEY=RELAY_PRIVATE_KEY)
 
 # Server is 'x.x.x.1' so peers get 'x.x.x.2' to 'x.x.x.NUM_PEERS'
 for i in range(2, NUM_PEERS + 2):
     # IP of new peer being provisioned
-    peer_ip = f'{SUBNET}.{str(i)}'
+    peer_ip = f'{wg_subnet}.{str(i)}'
     # Generate new keys with wireguard
     (peer_private_key, peer_public_key) = keys.genkey()
 
@@ -81,10 +96,10 @@ for i in range(2, NUM_PEERS + 2):
     peer_new_conf_buffer = \
         peer_new_conf.format(peer_ip=peer_ip,
                              peer_private_key=peer_private_key,
-                             server_public_key=SERVER_PUBLIC_KEY,
-                             SUBNET=SUBNET,
-                             SERVER_PUBLIC_IP=SERVER_PUBLIC_IP,
-                             SERVER_PORT=SERVER_PORT)
+                             RELAY_PUBLIC_KEY=RELAY_PUBLIC_KEY,
+                             SUBNET=wg_subnet,
+                             RELAY_PUBLIC_IP=relay_public_ip,
+                             RELAY_LISTEN_PORT=relay_listen_port)
 
     # New conf file generated for each peer and placed in same directory
     (PEER_CONF_DIR / f"wg_{peer_ip.replace('.', '-')}.conf")\
