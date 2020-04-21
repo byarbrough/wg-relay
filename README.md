@@ -13,6 +13,13 @@ The tricky thing to realize about wg is that all it does is make an encrypted ro
 Clone this repo, and then `cd` into it.
 Then, make sure your host sytem (this was developed and tested on Ubuntu 18.04) has Terraform and Ansible.
 
+Install Wireguard
+```
+sudo add-apt-repository ppa:wireguard/wireguard (necessary for Ubuntu)
+sudp apt-get update
+sudo apt-get install wireguard
+```
+
 Install Terraform
 ```
 cd infrastructure
@@ -89,6 +96,18 @@ peer: ...
 ```
 If you see a handshake, congratulations, your container is talking to the cloud wireguard relay!
 
+## Troubleshooting
+In the process of running `terraform apply`, you may encounter python library errors (especially for Ubuntu). Resolve this by installing the proper library version and update. For example if the build complains about urllib3 and chardet:
+```
+pip3 install urllib3==1.25.8
+pip3 install chardet==3.0.4
+pip3 install requests
+```
+You may also encounter other errors related to Ubuntu's reliance on Python2 for its own operations. Set Python3 to be your default version when running 'python'.
+```
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.6 2 (or python3 version of choice)
+sudo update-alternatives --config python
+```
 
 _Working repository is https://gitlab.com/byarbrough/wg-relay_
 
