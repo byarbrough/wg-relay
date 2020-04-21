@@ -145,7 +145,11 @@ resource "aws_instance" "wg_relay" {
   # execute ansible playbooks
   provisioner "local-exec" {
     # use current public ip becuase eip is not associated yet
-    command = "ansible-playbook -u ubuntu -i '${self.public_ip},' --private-key ${var.private_key_path} playbooks/wg_relay.yml"
+    command = <<EOC
+              "ansible-playbook -u ubuntu -i '${self.public_ip},' \
+              --private-key ${var.private_key_path} \
+              playbooks/wg_relay.yml"
+              EOC
   }
 
   tags = {
