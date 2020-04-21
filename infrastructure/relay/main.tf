@@ -139,7 +139,7 @@ resource "aws_instance" "wg_relay" {
   # generate wireguard key files
   provisioner "local-exec" {
     # use eip that will be associated after creation
-    command = "python3 ../src/make_configs.py ${aws_eip.wg_eip.public_ip}"
+    command = "python3 ../src/make_configs.py ${aws_eip.wg_eip.public_ip} ${var.wg_port}"
   }
 
   # execute ansible playbooks
