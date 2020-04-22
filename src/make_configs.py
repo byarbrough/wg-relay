@@ -2,11 +2,18 @@
 Create the wireguard server and configuration files
 """
 from pathlib import Path
+from wg import confs
 from wg import keys
 from ipaddress import ip_address
 from ipaddress import ip_network
 from itertools import islice
 import argparse
+
+
+PEER_CONF_DIR = Path('../peer/config')  # Path to store peer conf files
+PEER_CONF_DIR.mkdir(exist_ok=True)
+SERVER_CONF_DIR = Path('../infrastructure/playbooks/files/')
+SERVER_CONF_DIR.mkdir(exist_ok=True)
 
 
 # parse args
@@ -22,92 +29,48 @@ parser.add_argument('--peers', type=int, default='254',
                     help='Number of peer files to generate and add to relay')
 
 args = parser.parse_args()
-RELAY_LISTEN_PORT = args.relay_listen_port
+wgr_listen_port = args.relay_listen_port
 
 # verify relay_public_ip is valid
 try:
-    RELAY_PUBLIC_IP = ip_address(args.relay_public_ip)
+    wgr_public_ip = ip_address(args.relay_public_ip)
 except ValueError:
     raise
 
 # verify subnet is valid and create iterator
 try:
-    WG_SUBNET = ip_network(args.subnet, strict=True)
+    wg_subnet = ip_network(args.subnet, strict=True)
     # hosts() returns iterator, then slice the first peers
-    wg_peers = islice(WG_SUBNET.hosts(), args.peers)
+    wg_peers = islice(wg_subnet.hosts(), args.peers)
 except ValueError:
     raise
 
 
 # Generate a new private and pulic key for the relay
-(RELAY_PRIVATE_KEY, RELAY_PUBLIC_KEY) = keys.genkey()
+(wgr_priv_key, wgr_pub_key) = keys.genkey()
 
-
-PEER_CONF_DIR = Path('../peer/config')  # Path to store peer conf files
-PEER_CONF_DIR.mkdir(exist_ok=True)
-SERVER_CONF_DIR = Path('../infrastructure/playbooks/files/')
-SERVER_CONF_DIR.mkdir(exist_ok=True)
-
-# Format of start of server's wg0.conf
-server_new_conf = \
-    '''[Interface]
-    Address = {relay_ip}/24
-    ListenPort = {RELAY_LISTEN_PORT}
-    PrivateKey = {RELAY_PRIVATE_KEY}
-
-    '''
-
-# Format of info to append to server's wg0.conf
-server_new_peer = \
-    '''[Peer]
-    PublicKey = {peer_public_key}
-    AllowedIPs = {peer_ip}/32
-
-    '''
-
-# Format of info for peer's wg0.conf
-peer_new_conf = \
-    '''[Interface]
-    Address = {peer_ip}/24
-    PrivateKey = {peer_private_key}
-
-    [Peer]
-    PublicKey = {RELAY_PUBLIC_KEY}
-    AllowedIPs = {SUBNET}
-    Endpoint = {RELAY_PUBLIC_IP}:{RELAY_LISTEN_PORT}
-    PersistentKeepalive=23
-    '''
-
+# create the relay object
+wgr = confs.init_wgrelay(wg_subnet, wgr_public_ip,
+                         wgr_listen_port, wgr_priv_key)
 
 # Continually append new information to buffer
-server_conf_buffer = \
-    server_new_conf.format(relay_ip=str(next(wg_peers)),
-                           RELAY_LISTEN_PORT=RELAY_LISTEN_PORT,
-                           RELAY_PRIVATE_KEY=RELAY_PRIVATE_KEY)
+server_conf_buffer = confs.new_relay(wgr)
 
 # Server is 'x.x.x.1' so peers get 'x.x.x.2' to 'x.x.x.NUM_PEERS'
-for peer in wg_peers:
-    # convert from IPv4Address to string
-    peer = str(peer)
+for peer_ip in wg_peers:
+
     # Generate new keys with wireguard
-    (peer_private_key, peer_public_key) = keys.genkey()
+    (peer_priv_key, peer_pub_key) = keys.genkey()
+
+    # generate confs
+    (new_peer, relay_peer) = confs.new_peer(peer_ip, peer_priv_key, wgr)
 
     # Append new peer to server conf buffer
-    server_conf_buffer += \
-        server_new_peer.format(peer_public_key=peer_public_key,
-                               peer_ip=peer)
-
-    peer_new_conf_buffer = \
-        peer_new_conf.format(peer_ip=peer,
-                             peer_private_key=peer_private_key,
-                             RELAY_PUBLIC_KEY=RELAY_PUBLIC_KEY,
-                             SUBNET=WG_SUBNET,
-                             RELAY_PUBLIC_IP=RELAY_PUBLIC_IP,
-                             RELAY_LISTEN_PORT=RELAY_LISTEN_PORT)
+    server_conf_buffer += relay_peer
 
     # New conf file generated for each peer and placed in same directory
-    (PEER_CONF_DIR / f"wg_{peer.replace('.', '-')}.conf")\
-        .write_text(peer_new_conf_buffer)
+    (PEER_CONF_DIR / f"wg_{peer_ip.replace('.', '-')}.conf")\
+        .write_text(new_peer)
 
 # Write full server conf buffer to single file
 (SERVER_CONF_DIR / "wg0.conf").write_text(server_conf_buffer)
