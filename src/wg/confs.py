@@ -77,7 +77,7 @@ class WgRelay(object):
     wg_ip = IPv4Address
     wg_subnet = IPv4Network
     wg_cidr = 0
-    public_ip = ''
+    public_ip = IPv4Network
     listen_port = 0
     wg_private_key = ''
     wg_public_key = ''
