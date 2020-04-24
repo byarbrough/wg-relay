@@ -59,6 +59,7 @@ accept 3/3:
 python test:
   stage: test
   script:
-    - pytest
-  only:
-    - branches
+    - pytest --junitxml=pytest-report.xml
+  artifacts:
+    reports:
+      junit: pytest-report.xml
