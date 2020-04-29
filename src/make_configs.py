@@ -77,15 +77,21 @@ def main():
         wgr_conf_buffer += relay_peer
 
         # New conf file generated for each peer and placed in same directory
+        # Replace . in ip with - because random . in filenames are bad
         peerfile = (peerdir / f"wg_{str(peer_ip).replace('.', '-')}.conf")
+        # tag the top of the file with datetime
         peerfile.write_text('# Auto generated ' + str(datetime.now()) + '\n')
+        # restrict file read/write permissions to this user
         peerfile.chmod(0o600)
+        # append the contents of new_peer to file
         with open(peerfile, 'a') as pf:
             pf.write(new_peer)
 
     # Write full relay conf buffer to single file
     wgrfile = (wgrdir / "wg0.conf")
+    # tag the top of the file with datetime
     wgrfile.write_text('# Auto generated ' + str(datetime.now()) + '\n')
+    # restric file read/write permissions to this user
     wgrfile.chmod(0o600)
     with open(wgrfile, 'a') as wgrf:
         wgrf.write(wgr_conf_buffer)
